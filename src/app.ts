@@ -18,7 +18,7 @@ const corsOptions = {
     
     const allowedOrigins = process.env.ALLOWED_ORIGINS 
       ? process.env.ALLOWED_ORIGINS.split(',')
-      : ['http://localhost:3000', 'http://localhost:3001'];
+      : ['http://localhost:3000', 'http://localhost:3001', 'https://frontend-automaton-chat-bot.vercel.app'];
     
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
