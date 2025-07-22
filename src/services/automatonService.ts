@@ -126,4 +126,107 @@ export class AutomatonService {
         conversation.isDeleted = true;
         await conversation.save();
     }
+
+    static formatAutomatonForExport(automaton: Automaton): { content: string; filename: string } {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `${automaton.type}_automaton_${timestamp}.txt`;
+        
+        let content = `========================================\n`;
+        content += `           ${automaton.type} AUTOMATON\n`;
+        content += `========================================\n`;
+        content += `Generated on: ${new Date().toLocaleString()}\n\n`;
+        
+        content += `TYPE: ${automaton.type}\n\n`;
+        content += `STATES:\n`;
+        content += `  Q = {${automaton.states.join(', ')}}\n\n`;
+        
+        content += `ALPHABET:\n`;
+        content += `  Σ = {${automaton.alphabet.join(', ')}}\n\n`;
+        
+        content += `INITIAL STATE:\n`;
+        content += `  q₀ = ${automaton.initialState}\n\n`;
+        
+        content += `ACCEPT STATES:\n`;
+        content += `  F = {${automaton.acceptStates.join(', ')}}\n\n`;
+        
+        content += `TRANSITION FUNCTION:\n`;
+        content += `  δ(state, symbol) = next_state\n`;
+        content += `  --------------------------------\n`;
+        for (const [state, symbol, nextState] of automaton.transitions) {
+            content += `  δ(${state}, ${symbol}) = ${nextState}\n`;
+        }
+        
+        content += `\n========================================\n`;
+        content += `FORMAL DEFINITION:\n`;
+        content += `M = (Q, Σ, δ, q₀, F) where:\n`;
+        content += `  Q = {${automaton.states.join(', ')}}\n`;
+        content += `  Σ = {${automaton.alphabet.join(', ')}}\n`;
+        content += `  q₀ = ${automaton.initialState}\n`;
+        content += `  F = {${automaton.acceptStates.join(', ')}}\n`;
+        content += `  δ = transition function as defined above\n`;
+        content += `========================================\n\n`;
+        
+        content += `COPY-PASTE FORMAT FOR OTHER CHATBOTS:\n`;
+        content += `-------------------------------------\n`;
+        content += `Type: ${automaton.type}\n`;
+        content += `States: ${automaton.states.join(', ')}\n`;
+        content += `Alphabet: ${automaton.alphabet.join(', ')}\n`;
+        content += `Initial State: ${automaton.initialState}\n`;
+        content += `Accept States: ${automaton.acceptStates.join(', ')}\n`;
+        content += `Transitions:\n`;
+        for (const [state, symbol, nextState] of automaton.transitions) {
+            content += `  (${state}, ${symbol}) -> ${nextState}\n`;
+        }
+        
+        return { content, filename };
+    }
+
+    static formatCFGForExport(cfg: CFG): { content: string; filename: string } {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const filename = `CFG_grammar_${timestamp}.txt`;
+        
+        let content = `========================================\n`;
+        content += `      CONTEXT-FREE GRAMMAR (CFG)\n`;
+        content += `========================================\n`;
+        content += `Generated on: ${new Date().toLocaleString()}\n\n`;
+        
+        content += `VARIABLES (Non-terminals):\n`;
+        content += `  V = {${cfg.variables.join(', ')}}\n\n`;
+        
+        content += `TERMINALS:\n`;
+        content += `  T = {${cfg.terminals.join(', ')}}\n\n`;
+        
+        content += `START SYMBOL:\n`;
+        content += `  S = ${cfg.startSymbol}\n\n`;
+        
+        content += `PRODUCTION RULES:\n`;
+        content += `  P = {\n`;
+        for (const [variable, productions] of Object.entries(cfg.productions)) {
+            const productionList = productions.map(prod => prod.join('')).join(' | ');
+            content += `    ${variable} → ${productionList}\n`;
+        }
+        content += `  }\n\n`;
+        
+        content += `========================================\n`;
+        content += `FORMAL DEFINITION:\n`;
+        content += `G = (V, T, P, S) where:\n`;
+        content += `  V = {${cfg.variables.join(', ')}} (Variables)\n`;
+        content += `  T = {${cfg.terminals.join(', ')}} (Terminals)\n`;
+        content += `  S = ${cfg.startSymbol} (Start Symbol)\n`;
+        content += `  P = Production Rules as defined above\n`;
+        content += `========================================\n\n`;
+        
+        content += `COPY-PASTE FORMAT FOR OTHER CHATBOTS:\n`;
+        content += `-------------------------------------\n`;
+        content += `Variables: ${cfg.variables.join(', ')}\n`;
+        content += `Terminals: ${cfg.terminals.join(', ')}\n`;
+        content += `Start Symbol: ${cfg.startSymbol}\n`;
+        content += `Productions:\n`;
+        for (const [variable, productions] of Object.entries(cfg.productions)) {
+            const productionList = productions.map(prod => prod.join('')).join(' | ');
+            content += `  ${variable} -> ${productionList}\n`;
+        }
+        
+        return { content, filename };
+    }
 }

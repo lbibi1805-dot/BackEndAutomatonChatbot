@@ -31,4 +31,18 @@ export class AuthController {
             res.status(400).json({ error: error.message });
         }
     }
+
+    static async refreshToken(req: Request, res: Response) {
+        try {
+            const userId = (req as any).user?.userId;
+            if (!userId) {
+                return res.status(401).json({ error: 'User not authenticated' });
+            }
+            
+            const result = await AuthService.refreshToken(userId);
+            res.json(result);
+        } catch (error: any) {
+            res.status(400).json({ error: error.message });
+        }
+    }
 }

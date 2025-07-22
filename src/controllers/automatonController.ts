@@ -49,6 +49,50 @@ export class AutomatonController {
         }
     }
 
+    static async exportAutomaton(req: Request, res: Response) {
+        try {
+            console.log('Export request received');
+            console.log('Headers:', req.headers);
+            console.log('User from middleware:', req.user);
+            console.log('Body:', req.body);
+            
+            const userId = req.user?.userId;
+            if (!userId) {
+                console.log('No userId found, sending 401');
+                return res.status(401).json({ error: 'User not authenticated' });
+            }
+
+            const { automaton, cfg } = req.body;
+
+            let exportContent = '';
+            let filename = '';
+
+            if (automaton) {
+                console.log('Processing automaton export');
+                const exportData = AutomatonService.formatAutomatonForExport(automaton);
+                exportContent = exportData.content;
+                filename = exportData.filename;
+            } else if (cfg) {
+                console.log('Processing CFG export');
+                const exportData = AutomatonService.formatCFGForExport(cfg);
+                exportContent = exportData.content;
+                filename = exportData.filename;
+            } else {
+                console.log('No automaton or CFG data provided');
+                return res.status(400).json({ error: 'No automaton or CFG data provided' });
+            }
+
+            console.log('Setting headers for file download');
+            // Set appropriate headers for file download
+            res.setHeader('Content-Type', 'text/plain');
+            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+            res.send(exportContent);
+        } catch (error: any) {
+            console.error('Export error:', error);
+            res.status(500).json({ error: error.message });
+        }
+    }
+
     static async updateConversationName(req: Request, res: Response) {
         try {
             const userId = req.user?.userId;

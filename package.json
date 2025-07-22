@@ -5,8 +5,7 @@
   "scripts": {
     "start": "node dist/app.js",
     "build": "tsc",
-    "dev": "ts-node-dev --respawn src/app.ts",
-    "postbuild": "echo 'Build completed'"
+    "dev": "ts-node-dev --respawn src/app.ts"
   },
   "keywords": [],
   "author": "",

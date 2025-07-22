@@ -14,7 +14,7 @@ export class AuthService {
         await user.save();
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'your_jwt_secret_here', {
-        expiresIn: '1h',
+        expiresIn: '24h',
         });
         return { token };
     }
@@ -31,7 +31,19 @@ export class AuthService {
         }
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'your_jwt_secret_here', {
-        expiresIn: '1h',
+        expiresIn: '24h',
+        });
+        return { token };
+    }
+
+    static async refreshToken(userId: string) {
+        const user = await User.findById(userId);
+        if (!user || user.isDeleted) {
+            throw new Error('User not found');
+        }
+
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET || 'your_jwt_secret_here', {
+            expiresIn: '24h',
         });
         return { token };
     }
